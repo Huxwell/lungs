@@ -1,0 +1,7 @@
+convert '*.png[600x]' resized%03d.png
+limit the resizing to shrinking:
+
+$ convert '*.jpg[300x>]' thumb-300-%03d.png
+or enlarging:
+
+$ convert '*.jpg[300x<]' thumb-300-%03d.png
