@@ -1,10 +1,14 @@
+#convert '*.png[600x]' resized%03d.png
+#image magic for terminal to resize montgomery set
 import numpy as np
 import cv2
 import os
+from itertools import izip
 def nothing(*arg, **kw):
     pass
-def process_frame(frame):
+def process_frame(frame, mask):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = frame * mask
 
         kernel_size = cv2.getTrackbarPos('kernel_size', 'img')
         gauss_kernel_size = cv2.getTrackbarPos("gauss_kernel_size", 'img')
@@ -31,15 +35,17 @@ def process_frame(frame):
         cv2.imshow("img",frame)
         cv2.waitKey(0)
 
-def process(files):
+def process(files,masks):
     cv2.namedWindow('img')
     cv2.createTrackbar('kernel_size', 'img', 0, 50, nothing)
     cv2.createTrackbar('gauss_kernel_size', 'img', 0, 50, nothing)
     cv2.createTrackbar('threshold', 'img', 0, 255, nothing)
     cv2.createTrackbar('threshold2', 'img', 0, 255, nothing)
-    while True:
-        for f in files:
-            process_frame(cv2.imread(f))
+    for f,m in izip(files,masks):
+        try:
+            process_frame(cv2.imread(f),cv2.imread(m,flags=cv2.IMREAD_GRAYSCALE))
+        except:
+            pass
 def list1(files):
     cv2.namedWindow('img')
     cv2.createTrackbar('brightness', 'img', 0, 100, nothing)
@@ -62,6 +68,10 @@ def list1_process_frame(frame):
         cv2.waitKey(0)
 
 files = ["MontgomerySet/CXR_png_600/" + f for f in os.listdir("MontgomerySet/CXR_png_600/") if ".png" in f or ".PNG" in f]
+r_masks = ["MontgomerySet/ManualMask_600/rightMask/" + f for f in os.listdir("MontgomerySet/ManualMask_600/rightMask/") if ".png" in f or ".PNG" in f]
+l_masks = ["MontgomerySet/ManualMask_600/leftMask/" + f for f in os.listdir("MontgomerySet/ManualMask_600/leftMask/") if ".png" in f or ".PNG" in f]
+while True:
+    process(files,l_masks)
+    process(files,r_masks)
 
-process(files)
 
