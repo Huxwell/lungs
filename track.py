@@ -10,6 +10,12 @@ def process_frame(frame, mask):
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         frame = frame * mask
 
+        #countours_img,contours,hierarchy = cv2.findContours(frame,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        #cnt = contours[0]
+        x,y,w,h = cv2.boundingRect(frame)
+        frame = frame[y:y+h,x:x+w]
+
+
         kernel_size = cv2.getTrackbarPos('kernel_size', 'img')
         gauss_kernel_size = cv2.getTrackbarPos("gauss_kernel_size", 'img')
         if kernel_size > 2:
