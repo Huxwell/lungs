@@ -27,7 +27,6 @@ class Preprocessor:
         cv2.createTrackbar('threshold2', 'img', 0, 255, self.reprocess)
 
     def read_trackbars(self,val):
-        print val #not used, suprisingly
         self.kernel_size = cv2.getTrackbarPos('kernel_size', 'img')
         self.gauss_kernel_size = cv2.getTrackbarPos("gauss_kernel_size", 'img')
         self.threshold = cv2.getTrackbarPos('threshold', 'img')
@@ -41,7 +40,7 @@ class Preprocessor:
     def process_img(self,img):
         self.read_trackbars(0)
         kernel_size = self.kernel_size
-        gauss_kernel_size = self.kernel_size
+        gauss_kernel_size = self.gauss_kernel_size
         if kernel_size > 2:
             if kernel_size % 2 == 0:
                 kernel_size += 1
@@ -49,9 +48,11 @@ class Preprocessor:
             img = cv2.erode(img,kernel,iterations = 1)
             img = cv2.dilate(img,kernel, iterations = 1)
         if gauss_kernel_size > 2:
+            print gauss_kernel_size
             if gauss_kernel_size % 2 == 0:
                 gauss_kernel_size += 1
-                img = cv2.GaussianBlur(img, (gauss_kernel_size,gauss_kernel_size), 0)
+            img = cv2.GaussianBlur(img, (gauss_kernel_size,gauss_kernel_size), 0)
+
         if self.threshold > 0:
             val,img = cv2.threshold(img,self.threshold,255,cv2.THRESH_TOZERO)
         if self.threshold2 > 0:
@@ -74,6 +75,8 @@ class Preprocessor:
                 #print "MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp")
                 #cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),frame)
                 cv2.imshow("img",self.processed_img)
+                print f
+                print m
                 cv2.waitKey(0)
             except:
                 print "Except!"
