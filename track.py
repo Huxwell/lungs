@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import os
 from itertools import izip
+
 def nothing(*arg, **kw):
     pass
 def process_frame(frame, mask):
@@ -38,10 +39,10 @@ def process_frame(frame, mask):
             val,frame = cv2.threshold(frame,threshold2,255,cv2.THRESH_TOZERO_INV )
         #frame = cv2.cornerHarris(frame,2,3,0.04)
         #frame = cv2.Canny(frame,100,200)
-        cv2.imshow("img",frame)
-        cv2.waitKey(0)
 
-def process(files,masks):
+        return frame
+
+def process(files,masks,rev):
     cv2.namedWindow('img')
     cv2.createTrackbar('kernel_size', 'img', 0, 50, nothing)
     cv2.createTrackbar('gauss_kernel_size', 'img', 0, 50, nothing)
@@ -49,7 +50,13 @@ def process(files,masks):
     cv2.createTrackbar('threshold2', 'img', 0, 255, nothing)
     for f,m in izip(files,masks):
         try:
-            process_frame(cv2.imread(f),cv2.imread(m,flags=cv2.IMREAD_GRAYSCALE))
+            frame=process_frame(cv2.imread(f),cv2.imread(m,flags=cv2.IMREAD_GRAYSCALE))
+            if rev:
+                frame=cv2.flip(frame,1)
+            print "MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp")
+            cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),frame)
+            cv2.imshow("img",frame)
+            cv2.waitKey(0)
         except:
             pass
 def list1(files):
@@ -77,7 +84,7 @@ files = ["MontgomerySet/CXR_png_600/" + f for f in os.listdir("MontgomerySet/CXR
 r_masks = ["MontgomerySet/ManualMask_600/rightMask/" + f for f in os.listdir("MontgomerySet/ManualMask_600/rightMask/") if ".png" in f or ".PNG" in f]
 l_masks = ["MontgomerySet/ManualMask_600/leftMask/" + f for f in os.listdir("MontgomerySet/ManualMask_600/leftMask/") if ".png" in f or ".PNG" in f]
 while True:
-    process(files,l_masks)
-    process(files,r_masks)
+    process(files,l_masks,rev=True)
+    process(files,r_masks,rev=False)
 
 
