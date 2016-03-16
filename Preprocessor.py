@@ -48,7 +48,6 @@ class Preprocessor:
             img = cv2.erode(img,kernel,iterations = 1)
             img = cv2.dilate(img,kernel, iterations = 1)
         if gauss_kernel_size > 2:
-            print gauss_kernel_size
             if gauss_kernel_size % 2 == 0:
                 gauss_kernel_size += 1
             img = cv2.GaussianBlur(img, (gauss_kernel_size,gauss_kernel_size), 0)
@@ -59,7 +58,7 @@ class Preprocessor:
             val,img = cv2.threshold(img,self.threshold2,255,cv2.THRESH_TOZERO_INV )
         self.processed_img = img
 
-    def process(self,files,masks,rev=False):
+    def process(self,files,masks,rev=False, write=False):
         self.make_window()
         for f,m in izip(files,masks):
             try:
@@ -72,8 +71,9 @@ class Preprocessor:
 
 
                 self.process_img(self.curr_img)
+                if write:
                 #print "MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp")
-                #cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),frame)
+                    cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),self.curr_img)
                 cv2.imshow("img",self.processed_img)
                 print f
                 print m
