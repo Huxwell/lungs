@@ -6,7 +6,7 @@ from itertools import izip
 def nothing(*arg, **kw):
     pass
 class Preprocessor:
-    def __init__(self, lungs, l_masks, r_masks):
+    def __init__(self, lungs, l_masks=None, r_masks=None):
         self.lungs = lungs
         self.l_masks = l_masks
         self.r_masks = r_masks
@@ -58,29 +58,33 @@ class Preprocessor:
             val,img = cv2.threshold(img,self.threshold2,255,cv2.THRESH_TOZERO_INV )
         self.processed_img = img
 
-    def process(self,files,masks,rev=False, write=False):
+    def process(self,files,masks=None,rev=False, write=False):
         self.make_window()
-        for f,m in izip(files,masks):
-            try:
-
+        if masks:
+            for f,m in izip(files,masks):
+                try:
+                    self.curr_img = cv2.cvtColor(cv2.imread(f), cv2.COLOR_BGR2GRAY)
+                    self.curr_img = self.apply_mask(self.curr_img,cv2.imread(m,flags=cv2.IMREAD_GRAYSCALE),True)
+                    if rev:
+                        self.curr_img=cv2.flip(self.curr_img,1)
+                    self.process_img(self.curr_img)
+                    if write:
+                    #print "MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp")
+                        cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),self.curr_img)
+                    cv2.imshow("img",self.processed_img)
+                    print f
+                    print m
+                    if cv2.waitKey(0)==27:
+                        return
+                except:
+                    print "Except " + os.path.basename(os.path.normpath(f)) + " " + os.path.basename(os.path.normpath(m))
+        else:
+            for f in files:
                 self.curr_img = cv2.cvtColor(cv2.imread(f), cv2.COLOR_BGR2GRAY)
-                self.curr_img = self.apply_mask(self.curr_img,cv2.imread(m,flags=cv2.IMREAD_GRAYSCALE),True)
-
-                if rev:
-                    self.curr_img=cv2.flip(self.curr_img,1)
-
-
                 self.process_img(self.curr_img)
-                if write:
-                #print "MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp")
-                    cv2.imwrite("MontgomerySet/crop/"+os.path.basename(os.path.normpath(f)).replace(".png",".bmp"),self.curr_img)
                 cv2.imshow("img",self.processed_img)
-                print f
-                print m
-                cv2.waitKey(0)
-            except:
-                print "Except!"
-                print f
+                if cv2.waitKey(0)==27:
+                    return
 
 
     def debug(self):
