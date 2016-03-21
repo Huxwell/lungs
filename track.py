@@ -15,14 +15,14 @@ from Preprocessor import Preprocessor
         # return frame
 
 
-size="_800"
-#files = ["MontgomerySet/CXR_png"+size+"/" + f for f in os.listdir("MontgomerySet/CXR_png"+size+"/") if ".png" in f or ".PNG" in f]
-#r_masks = ["MontgomerySet/ManualMask"+size+"/rightMask/" + f for f in os.listdir("MontgomerySet/ManualMask"+size+"/rightMask/") if ".png" in f or ".PNG" in f]
-#l_masks = ["MontgomerySet/ManualMask"+size+"/leftMask/" + f for f in os.listdir("MontgomerySet/ManualMask"+size+"/leftMask/") if ".png" in f or ".PNG" in f]
-# processor = Preprocessor(files,l_masks,r_masks)
-# processor.process(processor.lungs,processor.l_masks,False,True)
-# processor.process(processor.lungs,processor.r_masks,True,True)
-files = ["MontgomerySet/crop"+size+"/" + f for f in os.listdir("MontgomerySet/crop"+size+"/") if ".bmp" in f or ".BMP" in f]
+size="_600"
+files = ["MontgomerySet/CXR_png"+size+"/" + f for f in os.listdir("MontgomerySet/CXR_png"+size+"/") if ".png" in f or ".PNG" in f]
+r_masks = ["MontgomerySet/ManualMask"+size+"/rightMask/" + f for f in os.listdir("MontgomerySet/ManualMask"+size+"/rightMask/") if ".png" in f or ".PNG" in f]
+l_masks = ["MontgomerySet/ManualMask"+size+"/leftMask/" + f for f in os.listdir("MontgomerySet/ManualMask"+size+"/leftMask/") if ".png" in f or ".PNG" in f]
+processor = Preprocessor(files,l_masks,r_masks)
+processor.process(processor.lungs,processor.l_masks,False,True)
+processor.process(processor.lungs,processor.r_masks,True,True)
+#files = ["MontgomerySet/crop"+size+"/" + f for f in os.listdir("MontgomerySet/crop"+size+"/") if ".bmp" in f or ".BMP" in f]
 print files
 processor = Preprocessor(files)
 processor.process(files)

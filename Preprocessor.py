@@ -10,6 +10,7 @@ class Preprocessor:
         self.lungs = lungs
         self.l_masks = l_masks
         self.r_masks = r_masks
+        self.fast = cv2.FastFeatureDetector_create()
     # def process_all(self):
 
     def apply_mask(self,img,mask,crop=False):
@@ -25,12 +26,17 @@ class Preprocessor:
         cv2.createTrackbar('gauss_kernel_size', 'img', 0, 50, self.reprocess)
         cv2.createTrackbar('threshold', 'img', 0, 255, self.reprocess)
         cv2.createTrackbar('threshold2', 'img', 0, 255, self.reprocess)
+        cv2.createTrackbar('FAST', 'img', 100, 100, self.reprocess)
+
 
     def read_trackbars(self,val):
         self.kernel_size = cv2.getTrackbarPos('kernel_size', 'img')
         self.gauss_kernel_size = cv2.getTrackbarPos("gauss_kernel_size", 'img')
         self.threshold = cv2.getTrackbarPos('threshold', 'img')
         self.threshold2 = cv2.getTrackbarPos('threshold2', 'img')
+        self.fastThr=cv2.getTrackbarPos('FAST', 'img')
+        #self.fast = cv2.FastFeatureDetector_create()
+        #self.fast = cv2.FastFeatureDetector_create(cv2.getTrackbarPos('FAST', 'img'))
 
 
     def reprocess(self,x):
@@ -56,8 +62,11 @@ class Preprocessor:
             val,img = cv2.threshold(img,self.threshold,255,cv2.THRESH_TOZERO)
         if self.threshold2 > 0:
             val,img = cv2.threshold(img,self.threshold2,255,cv2.THRESH_TOZERO_INV )
+        if self.fastThr < 100:
+            fast = cv2.FastFeatureDetector_create(self.fastThr)
+            kp = fast.detect(img,None)
+            img = cv2.drawKeypoints(img,kp,img)
         self.processed_img = img
-
     def process(self,files,masks=None,rev=False, write=False):
         self.make_window()
         if masks:
